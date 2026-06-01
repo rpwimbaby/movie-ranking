@@ -3,362 +3,204 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="世界の映画を興行収入順にまとめた、データで見る名作ガイド。">
-  <title>ランキング | 歴代映画 興行収入ランキング</title>
+  <meta name="description" content="ジャンル別に、Amazonで本当に使える定番アイテムを厳選して紹介します。">
+  <title>Amazon売れ筋ピックアップ</title>
   <style>
-    body { font-family:-apple-system,"Segoe UI",sans-serif; background:#0f1115;
-            color:#e8e8ea; margin:0; line-height:1.7; }
-    a { color:#7db0ff; }
-    header.hero { background:linear-gradient(135deg,#1c2333,#0f1115);
-            padding:38px 16px 30px; text-align:center; border-bottom:1px solid #232838; }
-    header.hero h1 { margin:0 0 8px; font-size:26px; }
-    header.hero p { margin:0; color:#9aa3b2; font-size:14px; }
-    nav { text-align:center; padding:12px; background:#11151d; font-size:14px; }
-    nav a { margin:0 10px; text-decoration:none; }
-    .wrap { max-width:760px; margin:0 auto; padding:24px 16px 60px; }
-    .intro { color:#b9c0cc; font-size:15px; margin-bottom:26px; }
-    .card { display:flex; align-items:center; gap:14px; background:#171b24;
-             border:1px solid #232838; border-radius:12px; padding:14px 16px;
-             margin-bottom:10px; }
-    .rank { font-size:22px; font-weight:bold; color:#ffcd6b; width:40px;
-             text-align:center; flex-shrink:0; }
-    .info { flex:1; min-width:0; }
-    .title { font-weight:600; margin-bottom:3px; }
-    .meta { color:#9aa3b2; font-size:13px; }
-    .btn { flex-shrink:0; background:#ff9900; color:#111; font-weight:600;
-            text-decoration:none; padding:9px 14px; border-radius:8px; font-size:14px; }
-    .btn:hover { background:#ffb84d; }
-    h2 { margin-top:34px; }
-    footer { border-top:1px solid #232838; color:#7a8290; font-size:12px;
-              text-align:center; padding:24px 16px; margin-top:30px; }
-    footer a { color:#9aa3b2; }
-  </style>
+    :root{
+      --bg:#f6f7fb; --card:#ffffff; --ink:#1c2230; --sub:#6b7385;
+      --line:#e7e9f0; --brand:#4f46e5; --brand-2:#7c74ff;
+      --amazon:#ff9900; --amazon-ink:#1a1a1a; --shadow:0 6px 22px rgba(28,34,48,.08);
+    }
+    *{box-sizing:border-box}
+    body{font-family:-apple-system,"Segoe UI",system-ui,"Hiragino Sans",
+         "Noto Sans JP",sans-serif; margin:0; background:var(--bg); color:var(--ink);
+         line-height:1.7; -webkit-font-smoothing:antialiased;}
+    a{color:var(--brand);}
+    .wrap{max-width:1040px; margin:0 auto; padding:0 18px;}
+    header.hero{background:linear-gradient(135deg,#4f46e5 0%,#7c74ff 55%,#9f7bff 100%);
+         color:#fff; padding:42px 18px 30px; text-align:center;}
+    header.hero h1{margin:0 0 8px; font-size:28px; letter-spacing:.02em;}
+    header.hero p{margin:0 auto; max-width:560px; color:#eef0ff; font-size:14.5px;}
+    nav{background:rgba(255,255,255,.14); display:flex; gap:6px; justify-content:center;
+        flex-wrap:wrap; margin-top:18px;}
+    nav a{color:#fff; text-decoration:none; font-size:13.5px; padding:7px 14px;
+        border-radius:999px; opacity:.92;}
+    nav a:hover{background:rgba(255,255,255,.22);}
+    footer{border-top:1px solid var(--line); color:var(--sub); font-size:12.5px;
+        text-align:center; padding:26px 16px; margin-top:50px; background:#fff;}
+    footer a{color:var(--sub);}
+    .page{padding:30px 0;}
+    .page h2{margin-top:30px; font-size:20px;}
+    .page p{color:#3c4354;}
+    
+    .toolbar{position:sticky; top:0; z-index:20; background:rgba(246,247,251,.92);
+        backdrop-filter:saturate(140%) blur(8px); border-bottom:1px solid var(--line);
+        padding:14px 0 10px;}
+    .search{position:relative; max-width:560px; margin:0 auto;}
+    .search input{width:100%; padding:13px 16px 13px 44px; font-size:15px;
+        border:1px solid var(--line); border-radius:999px; background:#fff;
+        box-shadow:var(--shadow); outline:none;}
+    .search input:focus{border-color:var(--brand);}
+    .search svg{position:absolute; left:15px; top:50%; transform:translateY(-50%);
+        width:18px; height:18px; fill:var(--sub);}
+    .chips{display:flex; gap:8px; flex-wrap:wrap; justify-content:center;
+        margin:12px auto 0; max-width:880px;}
+    .chip{border:1px solid var(--line); background:#fff; color:var(--ink);
+        padding:7px 14px; border-radius:999px; font-size:13px; cursor:pointer;
+        transition:.15s; user-select:none;}
+    .chip:hover{border-color:var(--brand-2);}
+    .chip.active{background:var(--brand); border-color:var(--brand); color:#fff;}
+    .meta-row{display:flex; align-items:center; justify-content:space-between;
+        gap:12px; max-width:1040px; margin:16px auto 0; padding:0 2px; flex-wrap:wrap;}
+    .count{color:var(--sub); font-size:13px;}
+    .sort{display:flex; align-items:center; gap:6px; font-size:13px; color:var(--sub);}
+    .sort select{border:1px solid var(--line); border-radius:8px; padding:6px 8px;
+        background:#fff; font-size:13px; color:var(--ink);}
+    .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(248px,1fr));
+        gap:16px; padding:22px 0 10px;}
+    .card{background:var(--card); border:1px solid var(--line); border-radius:16px;
+        overflow:hidden; display:flex; flex-direction:column;
+        box-shadow:var(--shadow); transition:transform .15s, box-shadow .15s;}
+    .card:hover{transform:translateY(-4px); box-shadow:0 12px 30px rgba(28,34,48,.13);}
+    .thumb{height:148px; display:flex; align-items:center; justify-content:center;
+        position:relative; overflow:hidden;}
+    .thumb span{font-size:58px; filter:drop-shadow(0 4px 8px rgba(0,0,0,.18));}
+    .thumb img{width:100%; height:100%; object-fit:cover; display:block;}
+    .body{padding:15px 16px 17px; display:flex; flex-direction:column; gap:8px; flex:1;}
+    .badge{align-self:flex-start; font-size:11.5px; color:var(--brand);
+        background:#eef0ff; padding:3px 10px; border-radius:999px;}
+    .card .name{font-weight:700; font-size:15.5px; line-height:1.5;}
+    .reason{font-size:13px; color:#0f766e; background:#ecfdf5; border:1px solid #c7f0e2;
+        padding:7px 10px; border-radius:9px; line-height:1.45;}
+    .reason b{color:#0d9488;}
+    .card .comment{color:var(--sub); font-size:13px; flex:1; line-height:1.6;}
+    .card .btn{margin-top:4px; text-align:center; background:var(--amazon);
+        color:var(--amazon-ink); font-weight:700; text-decoration:none;
+        padding:11px 14px; border-radius:10px; font-size:14px; transition:.15s;}
+    .card .btn:hover{background:#ffb13d;}
+    .empty{text-align:center; color:var(--sub); padding:60px 16px; display:none;}
+    .empty.show{display:block;}
+    @media(max-width:520px){
+      .grid{grid-template-columns:1fr 1fr; gap:11px;}
+      .thumb{height:110px;} .thumb span{font-size:44px;}
+      .body{padding:12px;}
+      .card .name{font-size:13.5px;}
+      .reason{font-size:12px;}
+    }
+    </style>
 </head>
 <body>
   <header class="hero">
-    <h1>🎬 歴代映画 興行収入ランキング</h1>
-    <p>世界の映画を興行収入順にまとめた、データで見る名作ガイド。</p>
-  </header>
+    <div class="wrap">
+      <h1>🛍️ Amazon売れ筋ピックアップ</h1>
+      <p>ジャンル別に、Amazonで本当に使える定番アイテムを厳選して紹介します。</p>
+    </div>
   <nav>
-    <a href="index.html">ランキング</a>
+    <a href="index.html">売れ筋まとめ</a>
     <a href="about.html">このサイトについて</a>
     <a href="privacy.html">プライバシーポリシー</a>
   </nav>
-  <div class="wrap">
-    <p class="intro">
-      世界中で公開された映画を「興行収入（世界での売上）」の多い順にランキングしました。
-      数字で見ると、時代を超えて愛される名作や、社会現象になった大作の凄さがひと目で分かります。
-      気になった作品は各カードのボタンから配信・ソフトをチェックできます。
-    </p>
-    <h2>世界興行収入ランキング TOP 30</h2>
-
-    <div class="card">
-      <div class="rank">1</div>
-      <div class="info">
-        <div class="title">Avatar</div>
-        <div class="meta">2009年公開 ・ 世界興行収入 $2,923,710,708（約29.2億ドル）</div>
+  </header>
+  <main>
+    <div class="toolbar">
+      <div class="wrap">
+        <div class="search">
+          <svg viewBox="0 0 24 24"><path d="M21 20l-5.6-5.6a7 7 0 10-1.4 1.4L20 21zM4 10a6 6 0 1112 0 6 6 0 01-12 0z"/></svg>
+          <input id="q" type="search" placeholder="商品名・キーワードで検索（例: モバイルバッテリー）" autocomplete="off">
+        </div>
+        <div class="chips" id="chips">
+          <button class="chip active" data-genre="">すべて</button><button class="chip" data-genre="ガジェット・スマホ周り">🔌 ガジェット・スマホ周り</button><button class="chip" data-genre="キッチン・便利グッズ">🍳 キッチン・便利グッズ</button><button class="chip" data-genre="美容・健康">💆 美容・健康</button><button class="chip" data-genre="日用品・消耗品">🧴 日用品・消耗品</button>
+        </div>
       </div>
-      <a class="btn" href="https://www.amazon.co.jp/s?k=Avatar+Blu-ray&tag=rpwimbaby-22" target="_blank" rel="noopener sponsored">
-        Amazonで観る
-      </a>
-    </div>
-    <div class="card">
-      <div class="rank">2</div>
-      <div class="info">
-        <div class="title">Avengers: Endgame</div>
-        <div class="meta">2019年公開 ・ 世界興行収入 $2,797,501,328（約28.0億ドル）</div>
-      </div>
-      <a class="btn" href="https://www.amazon.co.jp/s?k=Avengers%3A+Endgame+Blu-ray&tag=rpwimbaby-22" target="_blank" rel="noopener sponsored">
-        Amazonで観る
-      </a>
-    </div>
-    <div class="card">
-      <div class="rank">3</div>
-      <div class="info">
-        <div class="title">Avatar: The Way of Water</div>
-        <div class="meta">2022年公開 ・ 世界興行収入 $2,334,484,620（約23.3億ドル）</div>
-      </div>
-      <a class="btn" href="https://www.amazon.co.jp/s?k=Avatar%3A+The+Way+of+Water+Blu-ray&tag=rpwimbaby-22" target="_blank" rel="noopener sponsored">
-        Amazonで観る
-      </a>
-    </div>
-    <div class="card">
-      <div class="rank">4</div>
-      <div class="info">
-        <div class="title">Titanic</div>
-        <div class="meta">1997年公開 ・ 世界興行収入 $2,257,906,828（約22.6億ドル）</div>
-      </div>
-      <a class="btn" href="https://www.amazon.co.jp/s?k=Titanic+Blu-ray&tag=rpwimbaby-22" target="_blank" rel="noopener sponsored">
-        Amazonで観る
-      </a>
-    </div>
-    <div class="card">
-      <div class="rank">5</div>
-      <div class="info">
-        <div class="title">Ne Zha 2</div>
-        <div class="meta">2025年公開 ・ 世界興行収入 $2,215,690,000（約22.2億ドル）</div>
-      </div>
-      <a class="btn" href="https://www.amazon.co.jp/s?k=Ne+Zha+2+Blu-ray&tag=rpwimbaby-22" target="_blank" rel="noopener sponsored">
-        Amazonで観る
-      </a>
-    </div>
-    <div class="card">
-      <div class="rank">6</div>
-      <div class="info">
-        <div class="title">Star Wars: The Force Awakens</div>
-        <div class="meta">2015年公開 ・ 世界興行収入 $2,068,223,624（約20.7億ドル）</div>
-      </div>
-      <a class="btn" href="https://www.amazon.co.jp/s?k=Star+Wars%3A+The+Force+Awakens+Blu-ray&tag=rpwimbaby-22" target="_blank" rel="noopener sponsored">
-        Amazonで観る
-      </a>
-    </div>
-    <div class="card">
-      <div class="rank">7</div>
-      <div class="info">
-        <div class="title">Avengers: Infinity War</div>
-        <div class="meta">2018年公開 ・ 世界興行収入 $2,048,359,754（約20.5億ドル）</div>
-      </div>
-      <a class="btn" href="https://www.amazon.co.jp/s?k=Avengers%3A+Infinity+War+Blu-ray&tag=rpwimbaby-22" target="_blank" rel="noopener sponsored">
-        Amazonで観る
-      </a>
-    </div>
-    <div class="card">
-      <div class="rank">8</div>
-      <div class="info">
-        <div class="title">Spider-Man: No Way Home</div>
-        <div class="meta">2021年公開 ・ 世界興行収入 $1,922,598,800（約19.2億ドル）</div>
-      </div>
-      <a class="btn" href="https://www.amazon.co.jp/s?k=Spider-Man%3A+No+Way+Home+Blu-ray&tag=rpwimbaby-22" target="_blank" rel="noopener sponsored">
-        Amazonで観る
-      </a>
-    </div>
-    <div class="card">
-      <div class="rank">9</div>
-      <div class="info">
-        <div class="title">Zootopia 2 †</div>
-        <div class="meta">2025年公開 ・ 世界興行収入 $1,866,647,950（約18.7億ドル）</div>
-      </div>
-      <a class="btn" href="https://www.amazon.co.jp/s?k=Zootopia+2+%E2%80%A0+Blu-ray&tag=rpwimbaby-22" target="_blank" rel="noopener sponsored">
-        Amazonで観る
-      </a>
-    </div>
-    <div class="card">
-      <div class="rank">10</div>
-      <div class="info">
-        <div class="title">Inside Out 2</div>
-        <div class="meta">2024年公開 ・ 世界興行収入 $1,698,863,816（約17.0億ドル）</div>
-      </div>
-      <a class="btn" href="https://www.amazon.co.jp/s?k=Inside+Out+2+Blu-ray&tag=rpwimbaby-22" target="_blank" rel="noopener sponsored">
-        Amazonで観る
-      </a>
-    </div>
-    <div class="card">
-      <div class="rank">11</div>
-      <div class="info">
-        <div class="title">Jurassic World</div>
-        <div class="meta">2015年公開 ・ 世界興行収入 $1,671,537,444（約16.7億ドル）</div>
-      </div>
-      <a class="btn" href="https://www.amazon.co.jp/s?k=Jurassic+World+Blu-ray&tag=rpwimbaby-22" target="_blank" rel="noopener sponsored">
-        Amazonで観る
-      </a>
-    </div>
-    <div class="card">
-      <div class="rank">12</div>
-      <div class="info">
-        <div class="title">The Lion King</div>
-        <div class="meta">2019年公開 ・ 世界興行収入 $1,656,943,394（約16.6億ドル）</div>
-      </div>
-      <a class="btn" href="https://www.amazon.co.jp/s?k=The+Lion+King+Blu-ray&tag=rpwimbaby-22" target="_blank" rel="noopener sponsored">
-        Amazonで観る
-      </a>
-    </div>
-    <div class="card">
-      <div class="rank">13</div>
-      <div class="info">
-        <div class="title">The Avengers</div>
-        <div class="meta">2012年公開 ・ 世界興行収入 $1,518,815,515（約15.2億ドル）</div>
-      </div>
-      <a class="btn" href="https://www.amazon.co.jp/s?k=The+Avengers+Blu-ray&tag=rpwimbaby-22" target="_blank" rel="noopener sponsored">
-        Amazonで観る
-      </a>
-    </div>
-    <div class="card">
-      <div class="rank">14</div>
-      <div class="info">
-        <div class="title">Furious 7</div>
-        <div class="meta">2015年公開 ・ 世界興行収入 $1,515,341,399（約15.2億ドル）</div>
-      </div>
-      <a class="btn" href="https://www.amazon.co.jp/s?k=Furious+7+Blu-ray&tag=rpwimbaby-22" target="_blank" rel="noopener sponsored">
-        Amazonで観る
-      </a>
-    </div>
-    <div class="card">
-      <div class="rank">15</div>
-      <div class="info">
-        <div class="title">Top Gun: Maverick †</div>
-        <div class="meta">2022年公開 ・ 世界興行収入 $1,503,260,455（約15.0億ドル）</div>
-      </div>
-      <a class="btn" href="https://www.amazon.co.jp/s?k=Top+Gun%3A+Maverick+%E2%80%A0+Blu-ray&tag=rpwimbaby-22" target="_blank" rel="noopener sponsored">
-        Amazonで観る
-      </a>
-    </div>
-    <div class="card">
-      <div class="rank">16</div>
-      <div class="info">
-        <div class="title">Avatar: Fire and Ash</div>
-        <div class="meta">2025年公開 ・ 世界興行収入 $1,485,999,890（約14.9億ドル）</div>
-      </div>
-      <a class="btn" href="https://www.amazon.co.jp/s?k=Avatar%3A+Fire+and+Ash+Blu-ray&tag=rpwimbaby-22" target="_blank" rel="noopener sponsored">
-        Amazonで観る
-      </a>
-    </div>
-    <div class="card">
-      <div class="rank">17</div>
-      <div class="info">
-        <div class="title">Frozen 2</div>
-        <div class="meta">2019年公開 ・ 世界興行収入 $1,450,026,933（約14.5億ドル）</div>
-      </div>
-      <a class="btn" href="https://www.amazon.co.jp/s?k=Frozen+2+Blu-ray&tag=rpwimbaby-22" target="_blank" rel="noopener sponsored">
-        Amazonで観る
-      </a>
-    </div>
-    <div class="card">
-      <div class="rank">18</div>
-      <div class="info">
-        <div class="title">Barbie</div>
-        <div class="meta">2023年公開 ・ 世界興行収入 $1,447,138,421（約14.5億ドル）</div>
-      </div>
-      <a class="btn" href="https://www.amazon.co.jp/s?k=Barbie+Blu-ray&tag=rpwimbaby-22" target="_blank" rel="noopener sponsored">
-        Amazonで観る
-      </a>
-    </div>
-    <div class="card">
-      <div class="rank">19</div>
-      <div class="info">
-        <div class="title">Avengers: Age of Ultron</div>
-        <div class="meta">2015年公開 ・ 世界興行収入 $1,402,809,540（約14.0億ドル）</div>
-      </div>
-      <a class="btn" href="https://www.amazon.co.jp/s?k=Avengers%3A+Age+of+Ultron+Blu-ray&tag=rpwimbaby-22" target="_blank" rel="noopener sponsored">
-        Amazonで観る
-      </a>
-    </div>
-    <div class="card">
-      <div class="rank">20</div>
-      <div class="info">
-        <div class="title">The Super Mario Bros. Movie</div>
-        <div class="meta">2023年公開 ・ 世界興行収入 $1,360,783,214（約13.6億ドル）</div>
-      </div>
-      <a class="btn" href="https://www.amazon.co.jp/s?k=The+Super+Mario+Bros.+Movie+Blu-ray&tag=rpwimbaby-22" target="_blank" rel="noopener sponsored">
-        Amazonで観る
-      </a>
-    </div>
-    <div class="card">
-      <div class="rank">21</div>
-      <div class="info">
-        <div class="title">Black Panther</div>
-        <div class="meta">2018年公開 ・ 世界興行収入 $1,347,280,838（約13.5億ドル）</div>
-      </div>
-      <a class="btn" href="https://www.amazon.co.jp/s?k=Black+Panther+Blu-ray&tag=rpwimbaby-22" target="_blank" rel="noopener sponsored">
-        Amazonで観る
-      </a>
-    </div>
-    <div class="card">
-      <div class="rank">22</div>
-      <div class="info">
-        <div class="title">Harry Potter and the Deathly Hallows – Part 2</div>
-        <div class="meta">2011年公開 ・ 世界興行収入 $1,342,139,727（約13.4億ドル）</div>
-      </div>
-      <a class="btn" href="https://www.amazon.co.jp/s?k=Harry+Potter+and+the+Deathly+Hallows+%E2%80%93+Part+2+Blu-ray&tag=rpwimbaby-22" target="_blank" rel="noopener sponsored">
-        Amazonで観る
-      </a>
-    </div>
-    <div class="card">
-      <div class="rank">23</div>
-      <div class="info">
-        <div class="title">Deadpool &amp; Wolverine</div>
-        <div class="meta">2024年公開 ・ 世界興行収入 $1,338,073,645（約13.4億ドル）</div>
-      </div>
-      <a class="btn" href="https://www.amazon.co.jp/s?k=Deadpool+%26+Wolverine+Blu-ray&tag=rpwimbaby-22" target="_blank" rel="noopener sponsored">
-        Amazonで観る
-      </a>
-    </div>
-    <div class="card">
-      <div class="rank">24</div>
-      <div class="info">
-        <div class="title">Star Wars: The Last Jedi</div>
-        <div class="meta">2017年公開 ・ 世界興行収入 $1,332,539,889（約13.3億ドル）</div>
-      </div>
-      <a class="btn" href="https://www.amazon.co.jp/s?k=Star+Wars%3A+The+Last+Jedi+Blu-ray&tag=rpwimbaby-22" target="_blank" rel="noopener sponsored">
-        Amazonで観る
-      </a>
-    </div>
-    <div class="card">
-      <div class="rank">25</div>
-      <div class="info">
-        <div class="title">Jurassic World: Fallen Kingdom</div>
-        <div class="meta">2018年公開 ・ 世界興行収入 $1,308,476,166（約13.1億ドル）</div>
-      </div>
-      <a class="btn" href="https://www.amazon.co.jp/s?k=Jurassic+World%3A+Fallen+Kingdom+Blu-ray&tag=rpwimbaby-22" target="_blank" rel="noopener sponsored">
-        Amazonで観る
-      </a>
-    </div>
-    <div class="card">
-      <div class="rank">26</div>
-      <div class="info">
-        <div class="title">Frozen</div>
-        <div class="meta">2013年公開 ・ 世界興行収入 $1,290,000,000（約12.9億ドル）</div>
-      </div>
-      <a class="btn" href="https://www.amazon.co.jp/s?k=Frozen+Blu-ray&tag=rpwimbaby-22" target="_blank" rel="noopener sponsored">
-        Amazonで観る
-      </a>
-    </div>
-    <div class="card">
-      <div class="rank">27</div>
-      <div class="info">
-        <div class="title">Beauty and the Beast</div>
-        <div class="meta">2017年公開 ・ 世界興行収入 $1,263,521,126（約12.6億ドル）</div>
-      </div>
-      <a class="btn" href="https://www.amazon.co.jp/s?k=Beauty+and+the+Beast+Blu-ray&tag=rpwimbaby-22" target="_blank" rel="noopener sponsored">
-        Amazonで観る
-      </a>
-    </div>
-    <div class="card">
-      <div class="rank">28</div>
-      <div class="info">
-        <div class="title">Incredibles 2</div>
-        <div class="meta">2018年公開 ・ 世界興行収入 $1,242,805,359（約12.4億ドル）</div>
-      </div>
-      <a class="btn" href="https://www.amazon.co.jp/s?k=Incredibles+2+Blu-ray&tag=rpwimbaby-22" target="_blank" rel="noopener sponsored">
-        Amazonで観る
-      </a>
-    </div>
-    <div class="card">
-      <div class="rank">29</div>
-      <div class="info">
-        <div class="title">The Fate of the Furious</div>
-        <div class="meta">2017年公開 ・ 世界興行収入 $1,238,764,765（約12.4億ドル）</div>
-      </div>
-      <a class="btn" href="https://www.amazon.co.jp/s?k=The+Fate+of+the+Furious+Blu-ray&tag=rpwimbaby-22" target="_blank" rel="noopener sponsored">
-        Amazonで観る
-      </a>
-    </div>
-    <div class="card">
-      <div class="rank">30</div>
-      <div class="info">
-        <div class="title">Iron Man 3</div>
-        <div class="meta">2013年公開 ・ 世界興行収入 $1,214,811,252（約12.1億ドル）</div>
-      </div>
-      <a class="btn" href="https://www.amazon.co.jp/s?k=Iron+Man+3+Blu-ray&tag=rpwimbaby-22" target="_blank" rel="noopener sponsored">
-        Amazonで観る
-      </a>
     </div>
 
-  </div>
+    <div class="wrap">
+      <div class="meta-row">
+        <div class="count" id="count"></div>
+        <label class="sort">並び替え
+          <select id="sort">
+            <option value="default">おすすめ順</option>
+            <option value="name">名前順（あ→ん / A→Z）</option>
+            <option value="genre">ジャンル順</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="grid" id="grid"></div>
+      <div class="empty" id="empty">該当する商品が見つかりませんでした。<br>キーワードを変えてみてください。</div>
+    </div>
+  </main>
+
+  <script>
+    const PRODUCTS = [{"name": "Anker モバイルバッテリー 10000mAh", "reason": "スマホ約2回分を軽量ボディで持ち運べる", "comment": "軽くて薄いのに一日安心。結局これに戻る人が多い定番。", "genre": "ガジェット・スマホ周り", "url": "https://www.amazon.co.jp/s?k=Anker+%E3%83%A2%E3%83%90%E3%82%A4%E3%83%AB%E3%83%90%E3%83%83%E3%83%86%E3%83%AA%E3%83%BC+10000mAh&tag=rpwimbaby-22", "image": "", "icon": "🔌", "grad": "#6366f1, #8b5cf6"}, {"name": "USB-C ケーブル 充電 高耐久", "reason": "断線しにくく長持ちで買い替え頻度が減る", "comment": "高耐久タイプ。1本持っておくと充電のストレスが激減。", "genre": "ガジェット・スマホ周り", "url": "https://www.amazon.co.jp/s?k=USB-C+%E3%82%B1%E3%83%BC%E3%83%96%E3%83%AB+%E5%85%85%E9%9B%BB+%E9%AB%98%E8%80%90%E4%B9%85&tag=rpwimbaby-22", "image": "", "icon": "🔌", "grad": "#6366f1, #8b5cf6"}, {"name": "ワイヤレスイヤホン Bluetooth", "reason": "ケーブルの煩わしさから解放され通勤が快適", "comment": "安価でも十分使える定番。作業・移動のお供に。", "genre": "ガジェット・スマホ周り", "url": "https://www.amazon.co.jp/s?k=%E3%83%AF%E3%82%A4%E3%83%A4%E3%83%AC%E3%82%B9%E3%82%A4%E3%83%A4%E3%83%9B%E3%83%B3+Bluetooth&tag=rpwimbaby-22", "image": "", "icon": "🔌", "grad": "#6366f1, #8b5cf6"}, {"name": "スマホスタンド 卓上 折りたたみ", "reason": "動画もビデオ通話も手ぶらでラクになる", "comment": "角度が変えられて目線も上がる。地味に毎日使う。", "genre": "ガジェット・スマホ周り", "url": "https://www.amazon.co.jp/s?k=%E3%82%B9%E3%83%9E%E3%83%9B%E3%82%B9%E3%82%BF%E3%83%B3%E3%83%89+%E5%8D%93%E4%B8%8A+%E6%8A%98%E3%82%8A%E3%81%9F%E3%81%9F%E3%81%BF&tag=rpwimbaby-22", "image": "", "icon": "🔌", "grad": "#6366f1, #8b5cf6"}, {"name": "microSDカード 128GB", "reason": "容量不足の不安をまとめて解消できる", "comment": "スマホ・カメラ・ゲーム機の保存容量を一気に増やせる。", "genre": "ガジェット・スマホ周り", "url": "https://www.amazon.co.jp/s?k=microSD%E3%82%AB%E3%83%BC%E3%83%89+128GB&tag=rpwimbaby-22", "image": "", "icon": "🔌", "grad": "#6366f1, #8b5cf6"}, {"name": "電気ケトル 1L 自動電源オフ", "reason": "数十秒でお湯が沸き朝の時短に効く", "comment": "一人暮らしの最初の一台に。自動で電源が切れて安心。", "genre": "キッチン・便利グッズ", "url": "https://www.amazon.co.jp/s?k=%E9%9B%BB%E6%B0%97%E3%82%B1%E3%83%88%E3%83%AB+1L+%E8%87%AA%E5%8B%95%E9%9B%BB%E6%BA%90%E3%82%AA%E3%83%95&tag=rpwimbaby-22", "image": "", "icon": "🍳", "grad": "#f97316, #fb923c"}, {"name": "保存容器 ガラス 電子レンジ対応", "reason": "におい移りしにくくそのままレンジで温められる", "comment": "作り置き・冷凍・温め直しが一個で完結。洗いやすい。", "genre": "キッチン・便利グッズ", "url": "https://www.amazon.co.jp/s?k=%E4%BF%9D%E5%AD%98%E5%AE%B9%E5%99%A8+%E3%82%AC%E3%83%A9%E3%82%B9+%E9%9B%BB%E5%AD%90%E3%83%AC%E3%83%B3%E3%82%B8%E5%AF%BE%E5%BF%9C&tag=rpwimbaby-22", "image": "", "icon": "🍳", "grad": "#f97316, #fb923c"}, {"name": "ステンレスボトル 水筒 保温保冷", "reason": "保温・保冷が長持ちして節約にもなる", "comment": "夏も冬も大活躍。買い替え需要が多い定番アイテム。", "genre": "キッチン・便利グッズ", "url": "https://www.amazon.co.jp/s?k=%E3%82%B9%E3%83%86%E3%83%B3%E3%83%AC%E3%82%B9%E3%83%9C%E3%83%88%E3%83%AB+%E6%B0%B4%E7%AD%92+%E4%BF%9D%E6%B8%A9%E4%BF%9D%E5%86%B7&tag=rpwimbaby-22", "image": "", "icon": "🍳", "grad": "#f97316, #fb923c"}, {"name": "ハンディブレンダー 離乳食 スムージー", "reason": "鍋に直接使えて洗い物が最小で時短", "comment": "スープも離乳食もこれ一本。料理のハードルが下がる。", "genre": "キッチン・便利グッズ", "url": "https://www.amazon.co.jp/s?k=%E3%83%8F%E3%83%B3%E3%83%87%E3%82%A3%E3%83%96%E3%83%AC%E3%83%B3%E3%83%80%E3%83%BC+%E9%9B%A2%E4%B9%B3%E9%A3%9F+%E3%82%B9%E3%83%A0%E3%83%BC%E3%82%B8%E3%83%BC&tag=rpwimbaby-22", "image": "", "icon": "🍳", "grad": "#f97316, #fb923c"}, {"name": "キッチンばさみ 分解できる", "reason": "丸洗いできて清潔に保てる", "comment": "食材を切る・開けるが一本で完結。地味に毎日使う。", "genre": "キッチン・便利グッズ", "url": "https://www.amazon.co.jp/s?k=%E3%82%AD%E3%83%83%E3%83%81%E3%83%B3%E3%81%B0%E3%81%95%E3%81%BF+%E5%88%86%E8%A7%A3%E3%81%A7%E3%81%8D%E3%82%8B&tag=rpwimbaby-22", "image": "", "icon": "🍳", "grad": "#f97316, #fb923c"}, {"name": "電動歯ブラシ 充電式", "reason": "手磨きより磨き残しが減る実感がある", "comment": "つるつる感がクセになる。プレゼントにも人気。", "genre": "美容・健康", "url": "https://www.amazon.co.jp/s?k=%E9%9B%BB%E5%8B%95%E6%AD%AF%E3%83%96%E3%83%A9%E3%82%B7+%E5%85%85%E9%9B%BB%E5%BC%8F&tag=rpwimbaby-22", "image": "", "icon": "💆", "grad": "#ec4899, #f472b6"}, {"name": "ヘアドライヤー 速乾 大風量", "reason": "乾かす時間が短くなり髪の負担も軽い", "comment": "毎日使うものだから満足度が高い。速乾は正義。", "genre": "美容・健康", "url": "https://www.amazon.co.jp/s?k=%E3%83%98%E3%82%A2%E3%83%89%E3%83%A9%E3%82%A4%E3%83%A4%E3%83%BC+%E9%80%9F%E4%B9%BE+%E5%A4%A7%E9%A2%A8%E9%87%8F&tag=rpwimbaby-22", "image": "", "icon": "💆", "grad": "#ec4899, #f472b6"}, {"name": "メンズ電気シェーバー 水洗い", "reason": "手入れがラクで清潔をキープできる", "comment": "水洗いできて衛生的。リピート購入が多い分野。", "genre": "美容・健康", "url": "https://www.amazon.co.jp/s?k=%E3%83%A1%E3%83%B3%E3%82%BA%E9%9B%BB%E6%B0%97%E3%82%B7%E3%82%A7%E3%83%BC%E3%83%90%E3%83%BC+%E6%B0%B4%E6%B4%97%E3%81%84&tag=rpwimbaby-22", "image": "", "icon": "💆", "grad": "#ec4899, #f472b6"}, {"name": "プロテイン ホエイ 1kg", "reason": "続けやすい定番で運動の習慣化を後押し", "comment": "溶けやすく飲みやすい。定期的に買い足す消耗品。", "genre": "美容・健康", "url": "https://www.amazon.co.jp/s?k=%E3%83%97%E3%83%AD%E3%83%86%E3%82%A4%E3%83%B3+%E3%83%9B%E3%82%A8%E3%82%A4+1kg&tag=rpwimbaby-22", "image": "", "icon": "💆", "grad": "#ec4899, #f472b6"}, {"name": "コーヒー ドリップ 個包装", "reason": "1杯ずつ手軽で毎日の一杯がワンランク上に", "comment": "お湯を注ぐだけ。毎日消費するのでリピート率が高い。", "genre": "日用品・消耗品", "url": "https://www.amazon.co.jp/s?k=%E3%82%B3%E3%83%BC%E3%83%92%E3%83%BC+%E3%83%89%E3%83%AA%E3%83%83%E3%83%97+%E5%80%8B%E5%8C%85%E8%A3%85&tag=rpwimbaby-22", "image": "", "icon": "🧴", "grad": "#10b981, #34d399"}, {"name": "洗濯洗剤 詰め替え 大容量", "reason": "まとめ買いでコスパ良く買い忘れも防げる", "comment": "必ず使う日用品。大容量はストックにも安心。", "genre": "日用品・消耗品", "url": "https://www.amazon.co.jp/s?k=%E6%B4%97%E6%BF%AF%E6%B4%97%E5%89%A4+%E8%A9%B0%E3%82%81%E6%9B%BF%E3%81%88+%E5%A4%A7%E5%AE%B9%E9%87%8F&tag=rpwimbaby-22", "image": "", "icon": "🧴", "grad": "#10b981, #34d399"}, {"name": "アイマスク 蒸気 リラックス", "reason": "一日の終わりにじんわり温めてプチ贅沢", "comment": "手頃な価格でギフトにも。寝る前の習慣に。", "genre": "日用品・消耗品", "url": "https://www.amazon.co.jp/s?k=%E3%82%A2%E3%82%A4%E3%83%9E%E3%82%B9%E3%82%AF+%E8%92%B8%E6%B0%97+%E3%83%AA%E3%83%A9%E3%83%83%E3%82%AF%E3%82%B9&tag=rpwimbaby-22", "image": "", "icon": "🧴", "grad": "#10b981, #34d399"}];
+    const grid  = document.getElementById('grid');
+    const empty = document.getElementById('empty');
+    const count = document.getElementById('count');
+    const q     = document.getElementById('q');
+    const sortSel = document.getElementById('sort');
+    let activeGenre = "";
+
+    function escapeHtml(s){
+      return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    function cardHtml(p){
+      const thumb = p.image
+        ? `<div class="thumb"><img src="${p.image}" alt="${escapeHtml(p.name)}" loading="lazy"></div>`
+        : `<div class="thumb" style="background:linear-gradient(135deg, ${p.grad})"><span>${p.icon}</span></div>`;
+      const reason = p.reason
+        ? `<div class="reason"><b>推しポイント</b>：${escapeHtml(p.reason)}</div>` : '';
+      return `
+        <div class="card">
+          ${thumb}
+          <div class="body">
+            <span class="badge">${p.icon} ${escapeHtml(p.genre)}</span>
+            <div class="name">${escapeHtml(p.name)}</div>
+            ${reason}
+            <div class="comment">${escapeHtml(p.comment || '')}</div>
+            <a class="btn" href="${p.url}" target="_blank" rel="noopener sponsored">Amazonで見る</a>
+          </div>
+        </div>`;
+    }
+
+    function render(){
+      const kw = q.value.trim().toLowerCase();
+      let list = PRODUCTS.filter(p => {
+        const okGenre = !activeGenre || p.genre === activeGenre;
+        const okKw = !kw || (p.name + ' ' + (p.comment||'')).toLowerCase().includes(kw);
+        return okGenre && okKw;
+      });
+
+      const mode = sortSel.value;
+      if(mode === 'name')  list = [...list].sort((a,b)=>a.name.localeCompare(b.name,'ja'));
+      if(mode === 'genre') list = [...list].sort((a,b)=>a.genre.localeCompare(b.genre,'ja'));
+
+      grid.innerHTML = list.map(cardHtml).join('');
+      count.textContent = `${list.length} 件を表示中`;
+      empty.classList.toggle('show', list.length === 0);
+    }
+
+    // 検索（入力するたびに即フィルタ）
+    q.addEventListener('input', render);
+    sortSel.addEventListener('change', render);
+
+    // ジャンルチップ
+    document.getElementById('chips').addEventListener('click', e => {
+      const btn = e.target.closest('.chip');
+      if(!btn) return;
+      activeGenre = btn.dataset.genre;
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      render();
+    });
+
+    render();
+  </script>
   <footer>
-    最終更新: 2026年06月02日 02:43　/
+    最終更新: 2026年06月02日 03:22　/
     <a href="about.html">運営情報</a>・<a href="privacy.html">プライバシーポリシー</a><br>
     当サイトはAmazonアソシエイト・プログラムの参加者です。<br>
-    &copy; 歴代映画 興行収入ランキング
+    &copy; Amazon売れ筋ピックアップ
   </footer>
 </body>
 </html>

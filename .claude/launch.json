@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "movie-site-preview",
+      "runtimeExecutable": "C:/Python313/python.exe",
+      "runtimeArgs": ["-m", "http.server", "8077", "--directory", "C:/Users/yuuki/scraping-practice/movie-site/docs"],
+      "port": 8077
+    }
+  ]
+}
