@@ -27,7 +27,7 @@ TOP_N = 30                        # ランキングに載せる件数
 
 # ★AmazonアソシエイトのトラッキングID（登録後にここを自分のIDへ）★
 #   今は仮。例: "yuuki-22"。これ経由で売れると報酬が入る。
-AMAZON_TAG = "YOURID-22"
+AMAZON_TAG = "rpwimbaby-22"
 
 SITE_NAME = "歴代映画 興行収入ランキング"
 SITE_DESC = "世界の映画を興行収入順にまとめた、データで見る名作ガイド。"
