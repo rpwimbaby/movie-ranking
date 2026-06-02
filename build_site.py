@@ -234,7 +234,7 @@ def index_css():
     .card:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(28,34,48,.13);}
     .thumb{height:148px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
     .thumb span.ico{font-size:58px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.18));}
-    .thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+    .thumb img{width:100%;height:100%;object-fit:contain;background:#fff;display:block;}
     .body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:7px;flex:1;}
     .badge{align-self:flex-start;font-size:11.5px;color:var(--brand);background:#eef0ff;padding:3px 10px;border-radius:999px;}
     .card .name{font-weight:700;font-size:15px;line-height:1.5;}
@@ -355,7 +355,7 @@ def detail_css():
     .dthumb{height:240px;border-radius:16px;display:flex;align-items:center;justify-content:center;
       position:relative;overflow:hidden;box-shadow:var(--shadow);}
     .dthumb span.ico{font-size:96px;filter:drop-shadow(0 6px 12px rgba(0,0,0,.2));}
-    .dthumb img{width:100%;height:100%;object-fit:cover;}
+    .dthumb img{width:100%;height:100%;object-fit:contain;background:#fff;}
     .dhead .badge{display:inline-block;font-size:12px;color:var(--brand);background:#eef0ff;padding:3px 11px;border-radius:999px;}
     .dhead h1{font-size:23px;margin:10px 0 8px;line-height:1.45;}
     .dhead .rate-row{display:flex;align-items:center;margin-bottom:14px;}
