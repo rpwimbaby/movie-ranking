@@ -96,6 +96,7 @@ def load_products():
             "pros":    [p.strip() for p in (r.get("pros") or "").split("｜") if p.strip()],
             "cons":    [c.strip() for c in (r.get("cons") or "").split("｜") if c.strip()],
             "review":  (r.get("review") or "").strip(),
+            "for_who": (r.get("for_who") or "").strip(),
             "image":   (r.get("image") or "").strip(),
             "icon":    GENRE_ICONS.get(genre, "🛒"),
             "grad":    f"{c1}, {c2}",
@@ -363,6 +364,9 @@ def detail_css():
     .reasonbox{background:#ecfdf5;border:1px solid #c7f0e2;border-radius:12px;padding:13px 15px;
       color:#0f766e;font-size:14.5px;margin-bottom:18px;}
     .reasonbox b{color:#0d9488;}
+    .forwho{background:#eef0ff;border:1px solid #d6d9f5;border-radius:12px;padding:14px 16px;
+      font-size:14.5px;color:#3730a3;}
+    .forwho b{color:#4f46e5;}
     .buy{display:inline-block;background:var(--amazon);color:var(--amazon-ink);font-weight:800;
       text-decoration:none;padding:14px 26px;border-radius:12px;font-size:15.5px;box-shadow:var(--shadow);}
     .buy:hover{background:#ffb13d;}
@@ -433,6 +437,11 @@ def build_detail(p, genre_items):
     <div class="proscons">
       <div class="pcbox good"><h3>👍 メリット</h3><ul>{pros}</ul></div>
       <div class="pcbox bad"><h3>👀 気になる点</h3><ul>{cons}</ul></div>
+    </div>
+
+    <div class="sec">
+      <h2>こんな人におすすめ</h2>
+      <div class="forwho"><b>🙆 おすすめ</b>：{html.escape(p['for_who'])}</div>
     </div>
 
     <div class="sec">
