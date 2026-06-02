@@ -6,39 +6,42 @@
   <meta name="description" content="ジャンル別に、Amazonで本当に使える定番アイテムを厳選して紹介します。">
   <title>このサイトについて | Amazon売れ筋ピックアップ</title>
   <style>
-    :root{
-      --bg:#f6f7fb; --card:#ffffff; --ink:#1c2230; --sub:#6b7385;
-      --line:#e7e9f0; --brand:#4f46e5; --brand-2:#7c74ff;
-      --amazon:#ff9900; --amazon-ink:#1a1a1a; --shadow:0 6px 22px rgba(28,34,48,.08);
-    }
+    :root{--bg:#f6f7fb;--card:#fff;--ink:#1c2230;--sub:#6b7385;--line:#e7e9f0;
+      --brand:#4f46e5;--brand-2:#7c74ff;--amazon:#ff9900;--amazon-ink:#1a1a1a;
+      --gold:#f5b301;--shadow:0 6px 22px rgba(28,34,48,.08);}
     *{box-sizing:border-box}
-    body{font-family:-apple-system,"Segoe UI",system-ui,"Hiragino Sans",
-         "Noto Sans JP",sans-serif; margin:0; background:var(--bg); color:var(--ink);
-         line-height:1.7; -webkit-font-smoothing:antialiased;}
+    body{font-family:-apple-system,"Segoe UI",system-ui,"Hiragino Sans","Noto Sans JP",sans-serif;
+      margin:0;background:var(--bg);color:var(--ink);line-height:1.7;-webkit-font-smoothing:antialiased;}
     a{color:var(--brand);}
-    .wrap{max-width:1040px; margin:0 auto; padding:0 18px;}
+    .wrap{max-width:1040px;margin:0 auto;padding:0 18px;}
     header.hero{background:linear-gradient(135deg,#4f46e5 0%,#7c74ff 55%,#9f7bff 100%);
-         color:#fff; padding:42px 18px 30px; text-align:center;}
-    header.hero h1{margin:0 0 8px; font-size:28px; letter-spacing:.02em;}
-    header.hero p{margin:0 auto; max-width:560px; color:#eef0ff; font-size:14.5px;}
-    nav{background:rgba(255,255,255,.14); display:flex; gap:6px; justify-content:center;
-        flex-wrap:wrap; margin-top:18px;}
-    nav a{color:#fff; text-decoration:none; font-size:13.5px; padding:7px 14px;
-        border-radius:999px; opacity:.92;}
+      color:#fff;padding:40px 18px 28px;text-align:center;}
+    header.hero h1{margin:0 0 8px;font-size:27px;letter-spacing:.02em;}
+    header.hero h1 a{color:#fff;text-decoration:none;}
+    header.hero p{margin:0 auto;max-width:560px;color:#eef0ff;font-size:14.5px;}
+    nav{background:rgba(255,255,255,.14);display:flex;gap:6px;justify-content:center;
+      flex-wrap:wrap;margin-top:18px;}
+    nav a{color:#fff;text-decoration:none;font-size:13.5px;padding:7px 14px;border-radius:999px;opacity:.92;}
     nav a:hover{background:rgba(255,255,255,.22);}
-    footer{border-top:1px solid var(--line); color:var(--sub); font-size:12.5px;
-        text-align:center; padding:26px 16px; margin-top:50px; background:#fff;}
+    footer{border-top:1px solid var(--line);color:var(--sub);font-size:12.5px;
+      text-align:center;padding:26px 16px;margin-top:50px;background:#fff;}
     footer a{color:var(--sub);}
-    .page{padding:30px 0;}
-    .page h2{margin-top:30px; font-size:20px;}
-    .page p{color:#3c4354;}
+    /* 星評価 */
+    .stars{display:inline-block;position:relative;font-family:Arial,sans-serif;
+      font-size:15px;line-height:1;letter-spacing:2px;vertical-align:middle;}
+    .stars::before{content:"★★★★★";color:#dfe3ec;}
+    .stars::after{content:"★★★★★";color:var(--gold);position:absolute;left:0;top:0;
+      width:var(--pct,0%);overflow:hidden;white-space:nowrap;}
+    .rate-num{font-weight:700;color:#d98a00;font-size:13px;margin-left:7px;vertical-align:middle;}
+    /* 順位メダル */
+    .rankbadge{position:absolute;top:8px;left:8px;background:rgba(17,20,30,.78);color:#fff;
+      font-weight:700;font-size:13px;padding:3px 9px;border-radius:999px;backdrop-filter:blur(2px);}
     </style>
-
 </head>
 <body>
   <header class="hero">
     <div class="wrap">
-      <h1>🛍️ Amazon売れ筋ピックアップ</h1>
+      <h1><a href="index.html">🛍️ Amazon売れ筋ピックアップ</a></h1>
       <p>ジャンル別に、Amazonで本当に使える定番アイテムを厳選して紹介します。</p>
     </div>
   <nav>
@@ -47,25 +50,19 @@
     <a href="privacy.html">プライバシーポリシー</a>
   </nav>
   </header>
-  <div class="wrap page">
+  <div class="wrap" style="padding:30px 0;">
     <h2>このサイトについて</h2>
-    <p>
-      「Amazon売れ筋ピックアップ」は、Amazonで買えるアイテムの中から
-      「長く使える」「買ってよかった」と思える定番を、ジャンル別に厳選して
-      紹介するサイトです。数ある商品から選ぶ手間を少しでも減らせるよう、
-      実用性を重視してまとめています。
-    </p>
-    <h2>選び方について</h2>
-    <p>
-      掲載しているアイテムは、定番として広く使われているものや、用途がはっきりした
-      ものを中心に選んでいます。価格・在庫・最新のレビューは、各リンク先の
-      Amazonのページでご確認ください。
-    </p>
+    <p>「Amazon売れ筋ピックアップ」は、Amazonで買えるアイテムの中から「長く使える」
+      「買ってよかった」と思える定番を、ジャンル別に厳選して紹介するサイトです。
+      数ある商品から選ぶ手間を少しでも減らせるよう、実用性を重視してまとめています。</p>
+    <h2>評価・選び方について</h2>
+    <p>掲載している評価・メリット・デメリットは、用途や使い勝手をもとにした編集部の目安です。
+      価格・在庫・最新のレビューは各リンク先のAmazonのページでご確認ください。</p>
     <h2>運営者</h2>
     <p>個人で運営しています。お問い合わせは今後フォームを設置予定です。</p>
   </div>
   <footer>
-    最終更新: 2026年06月02日 03:31　/
+    最終更新: 2026年06月02日 22:46　/
     <a href="about.html">運営情報</a>・<a href="privacy.html">プライバシーポリシー</a><br>
     当サイトはAmazonアソシエイト・プログラムの参加者です。<br>
     &copy; Amazon売れ筋ピックアップ
