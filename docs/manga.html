@@ -78,6 +78,29 @@
   .placeholder b{color:var(--ink);font-size:13.5px;}
   .placeholder code{color:var(--accent);font-size:12px;}
 
+  /* 画像を入れるバー（ドロップ／選択） */
+  .dropbar{
+    display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+    margin:0 0 14px; padding:12px 14px; border:2px dashed var(--line);
+    border-radius:12px; background:rgba(255,255,255,.02);
+    font-family:"Hiragino Sans","Noto Sans JP",sans-serif;
+    transition:border-color .15s, background .15s;
+  }
+  .dropbar.drag{border-color:var(--accent); background:rgba(255,92,122,.08);}
+  .dropbar .pick{
+    border:none; cursor:pointer; font-weight:700; font-size:13px;
+    color:#16131d; background:#fff; padding:9px 16px; border-radius:999px;
+    box-shadow:2px 2px 0 rgba(0,0,0,.5); font-family:inherit;
+  }
+  .dropbar .pick:hover{background:#ffe3ea;}
+  .dropbar .hint{color:var(--sub); font-size:12.5px;}
+  .dropbar .clear{
+    margin-left:auto; border:1px solid var(--line); background:transparent;
+    color:var(--sub); cursor:pointer; font-size:12px; padding:7px 12px;
+    border-radius:999px; font-family:inherit;
+  }
+  .dropbar .clear:hover{color:var(--ink); border-color:var(--accent);}
+
   /* 光のグラデ（艶っぽさ） */
   .panel.hero .glow{
     position:absolute; inset:0; pointer-events:none;
@@ -155,16 +178,23 @@
       <small>― scene 01 ―</small>
     </div>
 
+    <!-- 画像をここに入れるだけ（場所を覚えなくてOK・次回も自動表示） -->
+    <div class="dropbar" id="dropbar">
+      <button class="pick" id="pickBtn">画像を選ぶ</button>
+      <span class="hint">またはここに画像をドラッグ＆ドロップ（デスクトップの画像でOK／一度入れれば毎回表示されます）</span>
+      <button class="clear" id="clearBtn" hidden>画像を消す</button>
+      <input type="file" id="fileInput" accept="image/*" hidden>
+    </div>
+
     <div class="page">
 
       <!-- メインのコマ -->
       <div class="panel hero">
-        <img class="art" src="assets/manga/scene.png" alt=""
-             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-        <div class="placeholder" style="display:none;">
+        <img class="art" alt="" hidden>
+        <div class="placeholder">
           <b>ここにキャラ画像が入ります</b>
-          <span>アップロードした画像を <code>docs/assets/manga/scene.png</code> に保存してください</span>
-          <span>（保存すると自動でこのコマに表示されます）</span>
+          <span>上の「画像を選ぶ」か、画像をドラッグ＆ドロップ</span>
+          <span>（場所は覚えなくてOK・次回も自動で表示）</span>
         </div>
         <div class="glow"></div>
         <div class="speed"></div>
@@ -175,11 +205,10 @@
 
       <!-- アップのコマ -->
       <div class="panel sub">
-        <img class="art" src="assets/manga/scene.png" alt=""
-             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-        <div class="placeholder" style="display:none;">
+        <img class="art" alt="" hidden>
+        <div class="placeholder">
           <b>同じ画像（アップ）</b>
-          <span><code>scene.png</code> を置くと表示されます</span>
+          <span>画像を入れると表示されます</span>
         </div>
         <div class="glow"></div>
         <div class="bubble b1" style="font-size:13px;">……今夜は、帰さないから。</div>
@@ -196,9 +225,66 @@
     </div>
 
     <p class="foot">
-      セリフ・擬音・雰囲気は <code>docs/manga.html</code> 内で自由に編集できます。<br>
-      画像は <code>docs/assets/manga/scene.png</code> に置くと、上下2コマへ自動反映されます。
+      画像は「画像を選ぶ」かドラッグ＆ドロップで入れるだけ。場所を覚える必要はありません。<br>
+      一度入れた画像はこのブラウザに保存され、次に開いたときも自動で表示されます（「画像を消す」で消去）。<br>
+      セリフ・擬音・雰囲気は <code>docs/manga.html</code> 内で自由に編集できます。
     </p>
   </div>
+
+<script>
+  (function(){
+    var KEY = "manga.scene.image";
+    var arts = document.querySelectorAll(".art");
+    var phs  = document.querySelectorAll(".placeholder");
+    var bar  = document.getElementById("dropbar");
+    var pick = document.getElementById("pickBtn");
+    var clr  = document.getElementById("clearBtn");
+    var file = document.getElementById("fileInput");
+
+    function show(dataUrl){
+      arts.forEach(function(img){ img.src = dataUrl; img.hidden = false; });
+      phs.forEach(function(p){ p.style.display = "none"; });
+      clr.hidden = false;
+    }
+    function reset(){
+      arts.forEach(function(img){ img.removeAttribute("src"); img.hidden = true; });
+      phs.forEach(function(p){ p.style.display = "flex"; });
+      clr.hidden = true;
+    }
+    function load(f){
+      if(!f || !/^image\//.test(f.type)) return;
+      var r = new FileReader();
+      r.onload = function(e){
+        var url = e.target.result;
+        show(url);
+        try{ localStorage.setItem(KEY, url); }catch(_){ /* 大きすぎる場合は保存のみ失敗、表示はOK */ }
+      };
+      r.readAsDataURL(f);
+    }
+
+    // 復元（毎回）
+    try{
+      var saved = localStorage.getItem(KEY);
+      if(saved){ show(saved); }
+    }catch(_){}
+
+    pick.addEventListener("click", function(){ file.click(); });
+    file.addEventListener("change", function(){ load(file.files[0]); });
+    clr.addEventListener("click", function(){
+      reset(); try{ localStorage.removeItem(KEY); }catch(_){}
+    });
+
+    // ドラッグ＆ドロップ（ページ全体で受け付け）
+    ["dragenter","dragover"].forEach(function(ev){
+      document.addEventListener(ev, function(e){ e.preventDefault(); bar.classList.add("drag"); });
+    });
+    ["dragleave","drop"].forEach(function(ev){
+      document.addEventListener(ev, function(e){ e.preventDefault(); bar.classList.remove("drag"); });
+    });
+    document.addEventListener("drop", function(e){
+      var dt = e.dataTransfer; if(dt && dt.files && dt.files.length) load(dt.files[0]);
+    });
+  })();
+</script>
 </body>
 </html>
