@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>縦動画メーカー（9:16 漫画コマ）</title>
+<style>
+  :root{--bg:#0e0d12;--panel:#15131b;--ink:#f3eef7;--sub:#b9b2c7;--line:#2b2734;--accent:#ff5c7a;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
+    padding:18px;display:flex;gap:22px;flex-wrap:wrap;justify-content:center;align-items:flex-start;}
+  .controls{width:320px;max-width:100%;display:flex;flex-direction:column;gap:14px;}
+  h1{font-size:17px;letter-spacing:.06em;margin:0 0 2px;}
+  .sub{color:var(--sub);font-size:12px;line-height:1.7;margin:0 0 6px;}
+  label{font-size:12px;color:var(--sub);display:block;margin:0 0 5px;}
+  .field{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;}
+  input[type=text],textarea{width:100%;background:#0c0a10;border:1px solid var(--line);color:var(--ink);
+    border-radius:9px;padding:9px 11px;font-size:13.5px;font-family:inherit;resize:vertical;}
+  input:focus,textarea:focus{outline:none;border-color:var(--accent);}
+  .row{display:flex;gap:8px;flex-wrap:wrap;}
+  button{cursor:pointer;font-family:inherit;font-weight:700;border:none;border-radius:999px;}
+  .pick{background:#fff;color:#16131d;padding:10px 16px;font-size:13px;box-shadow:2px 2px 0 rgba(0,0,0,.5);}
+  .pick:hover{background:#ffe3ea;}
+  .save{background:var(--accent);color:#fff;padding:13px 18px;font-size:14.5px;width:100%;box-shadow:0 6px 18px rgba(255,92,122,.35);}
+  .save:hover{filter:brightness(1.06);}
+  .ghost{background:transparent;border:1px solid var(--line);color:var(--sub);padding:9px 14px;font-size:12px;font-weight:600;}
+  .ghost:hover{color:var(--ink);border-color:var(--accent);}
+  .dropbar{border:2px dashed var(--line);border-radius:12px;padding:14px;text-align:center;transition:.15s;}
+  .dropbar.drag{border-color:var(--accent);background:rgba(255,92,122,.08);}
+  .dropbar .hint{color:var(--sub);font-size:11.5px;margin-top:8px;line-height:1.6;}
+  .stageWrap{flex:1;min-width:280px;display:flex;flex-direction:column;align-items:center;gap:8px;}
+  /* キャンバスは実寸1080x1920、表示は高さで縮小 */
+  #cv{background:#000;border-radius:8px;box-shadow:0 14px 40px rgba(0,0,0,.6);
+      max-height:82vh;width:auto;max-width:100%;}
+  .note{color:var(--sub);font-size:11.5px;text-align:center;line-height:1.7;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+</style>
+</head>
+<body>
+  <div class="controls">
+    <div>
+      <h1>縦動画メーカー（9:16）</h1>
+      <p class="sub">画像を入れて文字を打つだけ。1080×1920のPNGで保存できます。YouTube縦動画・Shortsにそのまま使えます。</p>
+    </div>
+
+    <div class="field">
+      <div class="dropbar" id="dropbar">
+        <button class="pick" id="pickBtn">画像を選ぶ</button>
+        <input type="file" id="fileInput" accept="image/*" hidden>
+        <div class="hint">またはここに画像をドラッグ&ドロップ<br>（縦動画サイズに自動でフィットします）</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>タイトル（上のテロップ）</label>
+      <input type="text" id="fTitle" placeholder="例：深夜のひとり時間">
+    </div>
+    <div class="field">
+      <label>セリフ（吹き出し）</label>
+      <textarea id="fBubble" rows="2" placeholder="例：…ちょっと、こっち見ないでよ。"></textarea>
+    </div>
+    <div class="field">
+      <label>キャプション（下の帯）</label>
+      <input type="text" id="fCaption" placeholder="例：#1 はじまりの夜">
+    </div>
+    <div class="field">
+      <label>効果音SFX（任意・斜め文字）</label>
+      <input type="text" id="fSfx" placeholder="例：ドキッ">
+    </div>
+
+    <button class="save" id="saveBtn">この縦サイズで画像を保存（1080×1920 PNG）</button>
+    <div class="row">
+      <button class="ghost" id="clearImg">画像を消す</button>
+      <button class="ghost" id="resetTxt">文字をリセット</button>
+    </div>
+  </div>
+
+  <div class="stageWrap">
+    <canvas id="cv" width="1080" height="1920"></canvas>
+    <p class="note">プレビューは縮小表示。保存される画像は1080×1920の原寸です。<br>画像を差し替えれば、同じテロップで何枚でも縦サイズ量産できます。</p>
+  </div>
+
+<script>
+(function(){
+  var W=1080,H=1920;
+  var cv=document.getElementById("cv"), ctx=cv.getContext("2d");
+  var img=null;
+  var KEY="vmaker.v1";
+  var els={
+    title:document.getElementById("fTitle"),
+    bubble:document.getElementById("fBubble"),
+    caption:document.getElementById("fCaption"),
+    sfx:document.getElementById("fSfx")
+  };
+
+  // スクリーントーン用タイル
+  var tone=document.createElement("canvas"); tone.width=tone.height=8;
+  var tctx=tone.getContext("2d");
+  tctx.fillStyle="rgba(0,0,0,0)"; tctx.fillRect(0,0,8,8);
+  tctx.fillStyle="rgba(0,0,0,1)"; tctx.beginPath(); tctx.arc(2,2,1.1,0,7); tctx.fill();
+  var tonePat=ctx.createPattern(tone,"repeat");
+
+  function roundRect(c,x,y,w,h,r){
+    c.beginPath();
+    c.moveTo(x+r,y); c.arcTo(x+w,y,x+w,y+h,r); c.arcTo(x+w,y+h,x,y+h,r);
+    c.arcTo(x,y+h,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath();
+  }
+  function wrap(c,text,maxW){
+    var out=[]; (text||"").split("\n").forEach(function(p){
+      var line="";
+      for(var i=0;i<p.length;i++){
+        var t=line+p[i];
+        if(c.measureText(t).width>maxW && line){ out.push(line); line=p[i]; }
+        else line=t;
+      }
+      out.push(line);
+    });
+    return out;
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // 背景
+    ctx.fillStyle="#000"; ctx.fillRect(0,0,W,H);
+
+    // 画像（cover フィット）
+    if(img){
+      var s=Math.max(W/img.width, H/img.height);
+      var dw=img.width*s, dh=img.height*s;
+      ctx.drawImage(img,(W-dw)/2,(H-dh)/2,dw,dh);
+    }else{
+      ctx.fillStyle="#1a151f";
+      for(var y=0;y<H;y+=40){ctx.fillRect(0,y,W,20);}
+      ctx.fillStyle="#6b6478"; ctx.textAlign="center"; ctx.font="bold 40px sans-serif";
+      ctx.fillText("ここに画像を入れてください",W/2,H/2);
+    }
+
+    // 上下の暗グラデ（文字を読みやすく）
+    var gt=ctx.createLinearGradient(0,0,0,420);
+    gt.addColorStop(0,"rgba(0,0,0,.72)"); gt.addColorStop(1,"rgba(0,0,0,0)");
+    ctx.fillStyle=gt; ctx.fillRect(0,0,W,420);
+    var gb=ctx.createLinearGradient(0,H-700,0,H);
+    gb.addColorStop(0,"rgba(0,0,0,0)"); gb.addColorStop(1,"rgba(0,0,0,.82)");
+    ctx.fillStyle=gb; ctx.fillRect(0,H-700,W,700);
+
+    // スクリーントーン（うっすら漫画質感）
+    ctx.save(); ctx.globalAlpha=.10; ctx.fillStyle=tonePat; ctx.fillRect(0,0,W,H); ctx.restore();
+
+    // 漫画パネル枠
+    ctx.strokeStyle="#000"; ctx.lineWidth=22; ctx.strokeRect(11,11,W-22,H-22);
+    ctx.strokeStyle="#fff"; ctx.lineWidth=4; ctx.strokeRect(30,30,W-60,H-60);
+
+    // タイトル
+    var title=els.title.value.trim();
+    if(title){
+      ctx.textAlign="left"; ctx.font="900 64px 'Hiragino Sans','Noto Sans JP',sans-serif";
+      ctx.lineJoin="round";
+      ctx.strokeStyle="#000"; ctx.lineWidth=12; ctx.strokeText(title,70,120);
+      ctx.fillStyle="#fff"; ctx.fillText(title,70,120);
+    }
+
+    // SFX（斜め）
+    var sfx=els.sfx.value.trim();
+    if(sfx){
+      ctx.save(); ctx.translate(W-140,300); ctx.rotate(-0.16);
+      ctx.textAlign="right"; ctx.font="900 110px 'Hiragino Sans','Noto Sans JP',sans-serif";
+      ctx.lineJoin="round"; ctx.strokeStyle="#000"; ctx.lineWidth=18; ctx.strokeText(sfx,0,0);
+      ctx.fillStyle="#fff"; ctx.fillText(sfx,0,0); ctx.restore();
+    }
+
+    // 吹き出し
+    var bub=els.bubble.value.trim();
+    if(bub){
+      ctx.font="700 46px 'Hiragino Sans','Noto Sans JP',sans-serif";
+      var maxW=720, pad=34, lh=62;
+      var lines=wrap(ctx,bub,maxW);
+      var tw=0; lines.forEach(function(l){tw=Math.max(tw,ctx.measureText(l).width);});
+      var bw=Math.min(maxW,tw)+pad*2, bh=lines.length*lh+pad*2;
+      var bx=70, by=H-bh-360;
+      // しっぽ
+      ctx.fillStyle="#fff"; ctx.strokeStyle="#000"; ctx.lineWidth=6;
+      roundRect(ctx,bx,by,bw,bh,26); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(bx+70,by+bh-4); ctx.lineTo(bx+50,by+bh+44);
+      ctx.lineTo(bx+130,by+bh-4); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle="#000"; ctx.lineWidth=6; ctx.stroke();
+      // 文字
+      ctx.fillStyle="#16131d"; ctx.textAlign="left";
+      lines.forEach(function(l,i){ ctx.fillText(l,bx+pad,by+pad+34+i*lh); });
+    }
+
+    // キャプション帯
+    var cap=els.caption.value.trim();
+    if(cap){
+      var ch=120, cy=H-ch-44;
+      ctx.fillStyle="rgba(255,92,122,.92)"; ctx.fillRect(44,cy,W-88,ch);
+      ctx.fillStyle="#fff"; ctx.textAlign="left";
+      ctx.font="800 50px 'Hiragino Sans','Noto Sans JP',sans-serif";
+      ctx.textBaseline="middle"; ctx.fillText(cap,80,cy+ch/2); ctx.textBaseline="alphabetic";
+    }
+    persist();
+  }
+
+  function persist(){
+    try{
+      localStorage.setItem(KEY,JSON.stringify({
+        t:els.title.value,b:els.bubble.value,c:els.caption.value,s:els.sfx.value,img:img?img.src:""
+      }));
+    }catch(_){}
+  }
+  function restore(){
+    try{
+      var d=JSON.parse(localStorage.getItem(KEY)||"{}");
+      els.title.value=d.t||""; els.bubble.value=d.b||"";
+      els.caption.value=d.c||""; els.sfx.value=d.s||"";
+      if(d.img){ loadSrc(d.img); } else draw();
+    }catch(_){ draw(); }
+  }
+
+  function loadSrc(src){
+    var im=new Image();
+    im.onload=function(){ img=im; draw(); };
+    im.src=src;
+  }
+  function loadFile(f){
+    if(!f||!/^image\//.test(f.type))return;
+    var r=new FileReader(); r.onload=function(e){ loadSrc(e.target.result); }; r.readAsDataURL(f);
+  }
+
+  // 入力
+  Object.keys(els).forEach(function(k){ els[k].addEventListener("input",draw); });
+  document.getElementById("pickBtn").addEventListener("click",function(){document.getElementById("fileInput").click();});
+  document.getElementById("fileInput").addEventListener("change",function(e){ loadFile(e.target.files[0]); });
+  document.getElementById("clearImg").addEventListener("click",function(){ img=null; draw(); });
+  document.getElementById("resetTxt").addEventListener("click",function(){
+    els.title.value=els.bubble.value=els.caption.value=els.sfx.value=""; draw();
+  });
+  document.getElementById("saveBtn").addEventListener("click",function(){
+    var a=document.createElement("a");
+    a.download="manga_vertical_"+Date.now()+".png";
+    a.href=cv.toDataURL("image/png"); a.click();
+  });
+
+  // D&D（全体で受付）
+  var bar=document.getElementById("dropbar");
+  ["dragenter","dragover"].forEach(function(ev){document.addEventListener(ev,function(e){e.preventDefault();bar.classList.add("drag");});});
+  ["dragleave","drop"].forEach(function(ev){document.addEventListener(ev,function(e){e.preventDefault();bar.classList.remove("drag");});});
+  document.addEventListener("drop",function(e){ if(e.dataTransfer&&e.dataTransfer.files.length) loadFile(e.dataTransfer.files[0]); });
+
+  restore();
+})();
+</script>
+</body>
+</html>
