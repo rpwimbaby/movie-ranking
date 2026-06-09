@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>MIDNIGHT — 漫画シーン</title>
+<style>
+  :root{
+    --paper:#0e0d12; --panel:#15131b; --ink:#f3eef7; --sub:#b9b2c7;
+    --line:#2b2734; --accent:#ff5c7a; --glow:rgba(255,92,122,.45);
+    --tone:#241f2e;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:"Hiragino Mincho ProN","Yu Mincho",serif;
+    background:
+      radial-gradient(1200px 600px at 70% -10%, #221a26 0%, transparent 60%),
+      radial-gradient(900px 500px at 10% 110%, #1a141f 0%, transparent 55%),
+      var(--paper);
+    color:var(--ink); min-height:100vh; line-height:1.7;
+    -webkit-font-smoothing:antialiased; padding:34px 16px 60px;
+  }
+  .stage{max-width:780px;margin:0 auto;}
+  .titlebar{display:flex;align-items:baseline;gap:12px;margin:0 0 18px;}
+  .titlebar h1{
+    font-size:20px;letter-spacing:.28em;margin:0;font-weight:700;
+    font-family:"Hiragino Sans","Noto Sans JP",sans-serif;
+  }
+  .titlebar small{color:var(--sub);font-size:12px;letter-spacing:.12em;
+    font-family:"Hiragino Sans","Noto Sans JP",sans-serif;}
+
+  /* ====== 漫画ページ（コマ割り） ====== */
+  .page{
+    display:grid; gap:10px;
+    grid-template-columns:1.45fr 1fr;
+    grid-template-rows:auto auto;
+    grid-template-areas:
+      "hero hero"
+      "sub  line";
+  }
+  @media(max-width:560px){
+    .page{grid-template-columns:1fr;grid-template-areas:"hero" "sub" "line";}
+  }
+
+  .panel{
+    position:relative; overflow:hidden; background:var(--panel);
+    border:3px solid #000; border-radius:4px;
+    box-shadow:0 10px 30px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.04);
+  }
+  .panel.hero{grid-area:hero; aspect-ratio:16/8.6;}
+  .panel.sub {grid-area:sub;  aspect-ratio:4/4.2;}
+  .panel.line{grid-area:line;}
+
+  /* スクリーントーン風ドット */
+  .panel::after{
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background-image:radial-gradient(var(--tone) 1px, transparent 1.4px);
+    background-size:7px 7px; opacity:.18; mix-blend-mode:screen;
+  }
+
+  /* キャラ画像 */
+  .art{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+    object-position:center 28%; filter:contrast(1.06) saturate(1.02);}
+  .panel.sub .art{object-position:center 22%; transform:scale(1.12);}
+
+  /* 画像が無いときのプレースホルダ */
+  .placeholder{
+    position:absolute; inset:0; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:8px; text-align:center;
+    color:var(--sub); font-size:12.5px; letter-spacing:.04em;
+    font-family:"Hiragino Sans","Noto Sans JP",sans-serif;
+    background:
+      repeating-linear-gradient(45deg,#1b1722 0 14px,#16131d 14px 28px);
+    padding:18px;
+  }
+  .placeholder b{color:var(--ink);font-size:13.5px;}
+  .placeholder code{color:var(--accent);font-size:12px;}
+
+  /* 光のグラデ（艶っぽさ） */
+  .panel.hero .glow{
+    position:absolute; inset:0; pointer-events:none;
+    background:
+      linear-gradient(180deg, transparent 35%, rgba(8,6,12,.55) 100%),
+      radial-gradient(380px 240px at 78% 24%, var(--glow), transparent 70%);
+    mix-blend-mode:soft-light;
+  }
+
+  /* 効果線（集中線） */
+  .speed{position:absolute; inset:-30%; pointer-events:none; opacity:.5;
+    background:repeating-conic-gradient(from 0deg at 75% 35%,
+      rgba(255,255,255,.10) 0deg 0.6deg, transparent 0.6deg 3deg);
+    mix-blend-mode:overlay;}
+
+  /* 擬音 */
+  .sfx{
+    position:absolute; right:14px; top:10px; z-index:3;
+    font-family:"Hiragino Sans","Noto Sans JP",sans-serif; font-weight:900;
+    color:#fff; font-size:42px; letter-spacing:.02em; line-height:.9;
+    transform:rotate(-8deg);
+    text-shadow:
+      0 0 0 #000, 3px 3px 0 #000, -2px 2px 0 #000, 2px -2px 0 #000,
+      -2px -2px 0 #000, 0 0 22px var(--glow);
+  }
+  .sfx small{display:block;font-size:15px;letter-spacing:.3em;margin-top:4px;
+    transform:rotate(2deg);color:#ffd3dd;text-shadow:1px 1px 0 #000;}
+
+  /* 吹き出し */
+  .bubble{
+    position:absolute; z-index:4; background:#fff; color:#16131d;
+    border:2px solid #000; border-radius:18px; padding:10px 14px;
+    font-family:"Hiragino Sans","Noto Sans JP",sans-serif; font-weight:700;
+    font-size:14px; line-height:1.5; max-width:62%;
+    box-shadow:3px 3px 0 rgba(0,0,0,.5);
+  }
+  .bubble::after{ /* しっぽ */
+    content:""; position:absolute; width:0; height:0;
+    border:10px solid transparent;
+  }
+  .bubble.b1{left:14px; bottom:16px;}
+  .bubble.b1::after{left:32px; bottom:-16px; border-top-color:#fff; border-bottom:0;
+    filter:drop-shadow(0 2px 0 #000);}
+
+  /* 心の声（モノローグ：角丸の細枠） */
+  .panel.line{
+    display:flex; align-items:center; justify-content:center; padding:18px;
+    background:linear-gradient(180deg,#16131d,#100d15);
+  }
+  .mono{
+    writing-mode:vertical-rl; text-orientation:upright;
+    font-size:18px; letter-spacing:.18em; line-height:1.9; color:var(--ink);
+    max-height:100%;
+  }
+  .mono .em{color:var(--accent); text-shadow:0 0 14px var(--glow);}
+  .mono .small{font-size:13px;color:var(--sub);}
+
+  /* キャプション帯 */
+  .caption{
+    position:absolute; left:0; bottom:0; z-index:3;
+    background:rgba(8,6,12,.78); color:#fff; font-size:12px; letter-spacing:.05em;
+    font-family:"Hiragino Sans","Noto Sans JP",sans-serif;
+    padding:7px 12px; border-top-right-radius:8px; backdrop-filter:blur(2px);
+  }
+
+  .foot{margin:18px 2px 0; color:var(--sub); font-size:11.5px; letter-spacing:.04em;
+    font-family:"Hiragino Sans","Noto Sans JP",sans-serif; line-height:1.8;}
+  .foot code{color:var(--accent);}
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="titlebar">
+      <h1>MIDNIGHT</h1>
+      <small>― scene 01 ―</small>
+    </div>
+
+    <div class="page">
+
+      <!-- メインのコマ -->
+      <div class="panel hero">
+        <img class="art" src="assets/manga/scene.png" alt=""
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        <div class="placeholder" style="display:none;">
+          <b>ここにキャラ画像が入ります</b>
+          <span>アップロードした画像を <code>docs/assets/manga/scene.png</code> に保存してください</span>
+          <span>（保存すると自動でこのコマに表示されます）</span>
+        </div>
+        <div class="glow"></div>
+        <div class="speed"></div>
+        <div class="sfx">ドキッ<small>……</small></div>
+        <div class="bubble b1">ねぇ……もう少しだけ、こっち来てよ。</div>
+        <div class="caption">――その瞳に、囚われる。</div>
+      </div>
+
+      <!-- アップのコマ -->
+      <div class="panel sub">
+        <img class="art" src="assets/manga/scene.png" alt=""
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        <div class="placeholder" style="display:none;">
+          <b>同じ画像（アップ）</b>
+          <span><code>scene.png</code> を置くと表示されます</span>
+        </div>
+        <div class="glow"></div>
+        <div class="bubble b1" style="font-size:13px;">……今夜は、帰さないから。</div>
+      </div>
+
+      <!-- 心の声のコマ -->
+      <div class="panel line">
+        <div class="mono">
+          こんな顔、<span class="em">君にしか</span>見せない――<br>
+          <span class="small">どうして、目が離せないんだろう。</span>
+        </div>
+      </div>
+
+    </div>
+
+    <p class="foot">
+      セリフ・擬音・雰囲気は <code>docs/manga.html</code> 内で自由に編集できます。<br>
+      画像は <code>docs/assets/manga/scene.png</code> に置くと、上下2コマへ自動反映されます。
+    </p>
+  </div>
+</body>
+</html>
